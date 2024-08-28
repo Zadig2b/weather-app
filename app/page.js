@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 
 import { MainCard } from "../components/MainCard";
@@ -12,7 +13,7 @@ import { ErrorScreen } from "../components/ErrorScreen";
 
 import styles from "../styles/Home.module.css";
 
-export const App = () => {
+export default function HomePage() {
   const [cityInput, setCityInput] = useState("Riga");
   const [triggerFetch, setTriggerFetch] = useState(true);
   const [weatherData, setWeatherData] = useState();
@@ -20,7 +21,7 @@ export const App = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const res = await fetch("api/data", {
+      const res = await fetch("/api/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cityInput }),
@@ -33,11 +34,27 @@ export const App = () => {
   }, [triggerFetch]);
 
   const changeSystem = () =>
-    unitSystem == "metric"
+    unitSystem === "metric"
       ? setUnitSystem("imperial")
       : setUnitSystem("metric");
 
-  return weatherData && !weatherData.message ? (
+  if (!weatherData) {
+    return <LoadingScreen loadingMessage="Loading data..." />;
+  }
+
+  if (weatherData.message) {
+    return (
+      <ErrorScreen errorMessage="City not found, try again!">
+        <Search
+          onFocus={(e) => (e.target.value = "")}
+          onChange={(e) => setCityInput(e.target.value)}
+          onKeyDown={(e) => e.keyCode === 13 && setTriggerFetch(!triggerFetch)}
+        />
+      </ErrorScreen>
+    );
+  }
+
+  return (
     <div className={styles.wrapper}>
       <MainCard
         city={weatherData.name}
@@ -59,7 +76,7 @@ export const App = () => {
             }}
             onChange={(e) => setCityInput(e.target.value)}
             onKeyDown={(e) => {
-              e.keyCode === 13 && setTriggerFetch(!triggerFetch);
+              if (e.keyCode === 13) setTriggerFetch(!triggerFetch);
               e.target.placeholder = "Search a city...";
             }}
           />
@@ -68,17 +85,5 @@ export const App = () => {
         <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>
     </div>
-  ) : weatherData && weatherData.message ? (
-    <ErrorScreen errorMessage="City not found, try again!">
-      <Search
-        onFocus={(e) => (e.target.value = "")}
-        onChange={(e) => setCityInput(e.target.value)}
-        onKeyDown={(e) => e.keyCode === 13 && setTriggerFetch(!triggerFetch)}
-      />
-    </ErrorScreen>
-  ) : (
-    <LoadingScreen loadingMessage="Loading data..." />
   );
-};
-
-export default App;
+}
