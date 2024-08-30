@@ -46,15 +46,15 @@ export class WeatherObject {
   }
 
   getFormattedTime() {
-    return this.current.time;
+    return new Date(this.current.time).toLocaleString();
   }
 
   getFormattedSunrise() {
-    return this.daily.sunrise;
+    return new Date(this.daily.sunrise[0]).toLocaleTimeString();
   }
 
   getFormattedSunset() {
-    return this.daily.sunset;
+    return new Date(this.daily.sunset[0]).toLocaleTimeString();
   }
 
   // Additional methods as needed

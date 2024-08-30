@@ -1,19 +1,11 @@
 import { getWeekDay, getTime, getAMPM } from "../services/helpers";
 import styles from "./DateAndTime.module.css";
 
-export const DateAndTime = ({ weatherData, unitSystem }) => {
-  // Ensure weatherData is a valid WeatherObject instance
-  if (
-    !weatherData ||
-    !weatherData.currentWeather ||
-    !weatherData.currentWeather.time
-  ) {
+export const DateAndTime = ({ time, timezone, unitSystem }) => {
+  // Check if time and timezone are available
+  if (!time || !timezone) {
     return <div>Data not available</div>;
   }
-
-  // Access the necessary data from the WeatherObject instance
-  const time = weatherData.currentWeather.time;
-  const timezone = weatherData.timezone;
 
   const localTime = new Date(time); // Convert the time string to a Date object
 

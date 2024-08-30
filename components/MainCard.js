@@ -9,14 +9,15 @@ export const MainCard = ({
   unitSystem,
   weatherData,
 }) => {
-  // Ensure weatherData is a valid WeatherObject instance
-  if (!weatherData || !weatherData.currentWeather) {
+  // Ensure weatherData is valid
+  if (!weatherData || !weatherData.current) {
     return <div>Weather data not available</div>;
   }
 
-  // Accédez aux données nécessaires depuis l'instance WeatherObject
-  const temperature = weatherData.currentWeather.temperature;
-  const weatherCode = weatherData.currentWeather.weathercode;
+  // Access the necessary data from the weatherData object
+  const { temperature_2m: temperature, weather_code: weatherCode } =
+    weatherData.current;
+
   const iconSrc = `/icons/${iconName}.svg`;
 
   return (
@@ -24,7 +25,7 @@ export const MainCard = ({
       <h1 className={styles.location}>
         {city || "Location"}, {country || "Country"}
       </h1>
-      <Image width={300} height={300} src={iconSrc} alt="weatherIcon" />
+      <Image width={300} height={300} src={iconSrc} alt="weather icon" />
       <h1 className={styles.temperature}>
         {unitSystem === "metric"
           ? Math.round(temperature)

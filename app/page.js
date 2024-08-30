@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-
 import { MainCard } from "../components/MainCard";
 import { ContentBox } from "../components/ContentBox";
 import { Header } from "../components/Header";
@@ -9,7 +8,6 @@ import { MetricsBox } from "../components/MetricsBox";
 import { UnitSwitch } from "../components/UnitSwitch";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { ErrorScreen } from "../components/ErrorScreen";
-
 import { WeatherObject } from "../models/weatherModel";
 
 import styles from "../styles/Home.module.css";
@@ -64,9 +62,10 @@ export default function HomePage() {
     );
 
   if (!weatherData) {
-    return <LoadingScreen loadingMessage="chargement des données" />;
+    return <LoadingScreen loadingMessage="Chargement des données..." />;
   }
 
+  // Error handling
   if (weatherData.message) {
     return (
       <ErrorScreen errorMessage="Ville non trouvée!">
@@ -78,39 +77,62 @@ export default function HomePage() {
     );
   }
 
+  // Destructure necessary data from weatherData
   const {
-    currentWeather,
-    currentWeatherUnits,
-    timezone,
     latitude,
     longitude,
     elevation,
+    current: {
+      temperature_2m,
+      apparent_temperature,
+      relative_humidity_2m,
+      wind_speed_10m,
+      wind_direction_10m,
+      is_day,
+      weather_code,
+      time,
+    },
+    currentUnits,
+    daily: { sunrise, sunset },
+    dailyUnits,
   } = weatherData;
-  // Construct the icon name based on weathercode and is_day
-  const suffix = currentWeather?.is_day === 1 ? "d" : "n";
-  const iconName = `0${currentWeather?.weathercode}${suffix}`;
+
+  // Construct the icon name based on weather code and is_day
+  const suffix = is_day === 1 ? "d" : "n";
+  const iconName = `0${weather_code}${suffix}`;
 
   return (
     <div className={styles.wrapper}>
       <MainCard
         city={cityInfo.city}
-        country={cityInfo.country}
-        description={`Weather code: ${currentWeather?.weathercode}`}
+        country={cityInfo.country || "N/A"}
+        description={`Weather code: ${weather_code}`}
         iconName={iconName}
         unitSystem={unitSystem}
         weatherData={weatherData}
       />
       <ContentBox>
         <Header>
-          <DateAndTime weatherData={weatherData} unitSystem={unitSystem} />
+          <DateAndTime
+            time={time}
+            unitSystem={unitSystem}
+            timezone={weatherData.timezone}
+            timezoneAbbreviation={weatherData.timezoneAbbreviation}
+          />
         </Header>
         <MetricsBox
-          weatherData={weatherData}
-          unitSystem={unitSystem}
-          units={currentWeatherUnits}
+          temperature={temperature_2m}
+          apparentTemperature={apparent_temperature}
+          humidity={relative_humidity_2m}
+          windSpeed={wind_speed_10m}
+          windDirection={wind_direction_10m}
+          units={currentUnits}
           latitude={latitude}
           longitude={longitude}
           elevation={elevation}
+          sunrise={sunrise[0]}
+          sunset={sunset[0]}
+          unitSystem={unitSystem}
         />
         <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>
