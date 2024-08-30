@@ -8,7 +8,7 @@ import { MetricsBox } from "../components/MetricsBox";
 import { UnitSwitch } from "../components/UnitSwitch";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { ErrorScreen } from "../components/ErrorScreen";
-import { WeatherObject } from "../models/weatherModel";
+import { WeatherObject } from "../models/WeatherModel2";
 
 import styles from "../styles/Home.module.css";
 
@@ -133,7 +133,7 @@ export default function HomePage() {
           sunrise={sunrise[0]}
           sunset={sunset[0]}
           unitSystem={unitSystem}
-          visibility={weatherData.getFormattedVisibility()}
+          visibility={weatherData.visibility}
         />
         <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>
