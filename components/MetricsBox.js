@@ -18,6 +18,7 @@ export const MetricsBox = ({
   sunset,
   unitSystem,
   units,
+  visibility,
   latitude,
   longitude,
   elevation,
@@ -37,26 +38,6 @@ export const MetricsBox = ({
 
   return (
     <div className={styles.wrapper}>
-      {/* <MetricsCard
-        title="Temperature"
-        iconSrc="/icons/temperature.png"
-        metric={
-          unitSystem === "metric"
-            ? Math.round(temperature)
-            : Math.round(ctoF(temperature))
-        }
-        unit={unitSystem === "metric" ? units.temperature_2m : "°F"}
-      />
-      <MetricsCard
-        title="Apparent Temperature"
-        iconSrc="/icons/temperature.png"
-        metric={
-          unitSystem === "metric"
-            ? Math.round(apparentTemperature)
-            : Math.round(ctoF(apparentTemperature))
-        }
-        unit={unitSystem === "metric" ? units.apparent_temperature : "°F"}
-      /> */}
       <MetricsCard
         title="Humidity"
         iconSrc="/icons/humidity.png"
@@ -73,6 +54,12 @@ export const MetricsBox = ({
         title="Wind Direction"
         iconSrc="/icons/compass.png"
         metric={degToCompass(windDirection)}
+      />
+      <MetricsCard
+        title="Visibility"
+        iconSrc="/icons/binocular.png"
+        metric={getVisibility(unitSystem, visibility)}
+        unit={unitSystem === "metric" ? "km" : "miles"}
       />
       <MetricsCard
         title="Sunrise"

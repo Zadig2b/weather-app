@@ -11,6 +11,8 @@ export class WeatherObject {
     current,
     daily,
     daily_units,
+    hourly,
+    hourly_units,
   }) {
     this.latitude = latitude;
     this.longitude = longitude;
@@ -23,6 +25,8 @@ export class WeatherObject {
     this.current = current;
     this.daily = daily;
     this.dailyUnits = daily_units;
+    this.hourly = hourly;
+    this.hourlyUnits = hourly_units;
   }
 
   getFormattedTemperature() {
@@ -43,6 +47,15 @@ export class WeatherObject {
 
   getFormattedWindDirection() {
     return `${this.current.wind_direction_10m} ${this.currentUnits.wind_direction_10m}`;
+  }
+
+  getFormattedVisibility() {
+    const visibility = this.hourly.visibility.find((_, index) => {
+      return (
+        new Date(this.hourly.time[index]).toISOString() === this.current.time
+      );
+    });
+    return visibility ? `${visibility} ${this.hourlyUnits.visibility}` : "N/A";
   }
 
   getFormattedTime() {

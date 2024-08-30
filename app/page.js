@@ -133,6 +133,7 @@ export default function HomePage() {
           sunrise={sunrise[0]}
           sunset={sunset[0]}
           unitSystem={unitSystem}
+          visibility={weatherData.getFormattedVisibility()}
         />
         <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>
