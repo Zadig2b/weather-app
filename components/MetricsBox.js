@@ -19,7 +19,15 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
   }
 
   const { currentWeather, currentWeatherUnits } = weatherData;
-  const { windspeed, winddirection, visibility, humidity } = currentWeather;
+  const {
+    windspeed,
+    winddirection,
+    visibility,
+    humidity,
+    sunrise,
+    sunset,
+    timezone,
+  } = currentWeather;
 
   return (
     <div className={styles.wrapper}>
@@ -50,22 +58,14 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
       <MetricsCard
         title={"Sunrise"}
         iconSrc={"/icons/sunrise.png"}
-        metric={getTime(
-          unitSystem,
-          current_weather.sunrise, // Supposer que sunrise est disponible sous current_weather
-          timezone
-        )}
-        unit={getAMPM(unitSystem, current_weather.sunrise, timezone)}
+        metric={getTime(unitSystem, sunrise, timezone)}
+        unit={getAMPM(unitSystem, sunrise, timezone)}
       />
       <MetricsCard
         title={"Sunset"}
         iconSrc={"/icons/sunset.png"}
-        metric={getTime(
-          unitSystem,
-          current_weather.sunset, // Supposer que sunset est disponible sous current_weather
-          timezone
-        )}
-        unit={getAMPM(unitSystem, current_weather.sunset, timezone)}
+        metric={getTime(unitSystem, sunset, timezone)}
+        unit={getAMPM(unitSystem, sunset, timezone)}
       />
     </div>
   );
