@@ -10,6 +10,8 @@ import { UnitSwitch } from "../components/UnitSwitch";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { ErrorScreen } from "../components/ErrorScreen";
 
+import { WeatherObject } from "../models/weatherModel";
+
 import styles from "../styles/Home.module.css";
 
 export default function HomePage() {
@@ -17,7 +19,6 @@ export default function HomePage() {
   const [unitSystem, setUnitSystem] = useState("metric");
   const [cityInfo, setCityInfo] = useState(null);
 
-  // Charger les informations de la ville depuis le fichier JSON
   useEffect(() => {
     const fetchCityInfo = async () => {
       try {
@@ -32,7 +33,6 @@ export default function HomePage() {
     fetchCityInfo();
   }, []);
 
-  // Obtenir les données météorologiques lorsque cityInfo change
   useEffect(() => {
     if (cityInfo && cityInfo.city) {
       const getData = async () => {
@@ -45,42 +45,11 @@ export default function HomePage() {
           const data = await res.json();
           console.log("API response:", data);
 
-          // Extraire les données pertinentes de la réponse
-          const {
-            current_weather,
-            current_weather_units,
-            latitude,
-            longitude,
-            timezone,
-            timezone_abbreviation,
-            elevation,
-            generationtime_ms,
-            utc_offset_seconds,
-          } = data;
-          console.log("Extracted weather data:", {
-            current_weather,
-            current_weather_units,
-            latitude,
-            longitude,
-            timezone,
-            timezone_abbreviation,
-            elevation,
-            generationtime_ms,
-            utc_offset_seconds,
-          });
+          // Create an instance of WeatherObject using the data from the API
+          const weatherObject = new WeatherObject(data);
+          console.log("Weather Object:", weatherObject);
 
-          // Mettre à jour l'état avec les nouvelles données météorologiques
-          setWeatherData({
-            current_weather,
-            current_weather_units,
-            latitude,
-            longitude,
-            timezone,
-            timezone_abbreviation,
-            elevation,
-            generationtime_ms,
-            utc_offset_seconds,
-          });
+          setWeatherData(weatherObject);
         } catch (error) {
           console.error("Error fetching weather data:", error);
         }
@@ -89,21 +58,18 @@ export default function HomePage() {
     }
   }, [cityInfo]);
 
-  // Fonction pour changer le système d'unités
   const changeSystem = () =>
     setUnitSystem((prevSystem) =>
       prevSystem === "metric" ? "imperial" : "metric"
     );
 
-  // Affichage pendant le chargement des données
   if (!weatherData) {
-    return <LoadingScreen loadingMessage="Loading data..." />;
+    return <LoadingScreen loadingMessage="chargement des données" />;
   }
 
-  // Affichage en cas d'erreur avec les données météorologiques
   if (weatherData.message) {
     return (
-      <ErrorScreen errorMessage="City not found, try again!">
+      <ErrorScreen errorMessage="Ville non trouvée!">
         <p>
           La ville configurée n'a pas pu être trouvée. Veuillez vérifier le
           fichier de configuration.
@@ -112,36 +78,36 @@ export default function HomePage() {
     );
   }
 
-  // Console log des données météorologiques avant le rendu
-  console.log("Weather data before rendering:", weatherData);
-
   const {
-    current_weather,
-    current_weather_units,
+    currentWeather,
+    currentWeatherUnits,
     timezone,
     latitude,
     longitude,
     elevation,
   } = weatherData;
+  // Construct the icon name based on weathercode and is_day
+  const suffix = currentWeather?.is_day === 1 ? "d" : "n";
+  const iconName = `0${currentWeather?.weathercode}${suffix}`;
 
   return (
     <div className={styles.wrapper}>
       <MainCard
-        city={cityInfo.city} // Nom de la ville configuré
-        country={cityInfo.country} // Pays configuré
-        description={`Weather code: ${current_weather.weathercode}`} // Description basée sur le code météo
-        iconName={`icon-${current_weather.weathercode}`} // Nom de l'icône basé sur le code météo
+        city={cityInfo.city}
+        country={cityInfo.country}
+        description={`Weather code: ${currentWeather?.weathercode}`}
+        iconName={iconName}
         unitSystem={unitSystem}
         weatherData={weatherData}
       />
       <ContentBox>
         <Header>
-          <DateAndTime weatherData={current_weather} unitSystem={unitSystem} />
+          <DateAndTime weatherData={weatherData} unitSystem={unitSystem} />
         </Header>
         <MetricsBox
-          weatherData={current_weather}
+          weatherData={weatherData}
           unitSystem={unitSystem}
-          units={current_weather_units}
+          units={currentWeatherUnits}
           latitude={latitude}
           longitude={longitude}
           elevation={elevation}

@@ -1,4 +1,4 @@
-import { degToCompass } from "../services/converters";
+import { degToCompass, ctoF } from "../services/converters";
 import {
   getTime,
   getAMPM,
@@ -9,35 +9,37 @@ import { MetricsCard } from "./MetricsCard";
 import styles from "./MetricsBox.module.css";
 
 export const MetricsBox = ({ weatherData, unitSystem }) => {
-  // Assurer que weatherData et current_weather sont définis
-  if (!weatherData || !weatherData.current_weather) {
+  // Ensure weatherData and currentWeather are defined
+  if (
+    !weatherData ||
+    !weatherData.currentWeather ||
+    !weatherData.currentWeatherUnits
+  ) {
     return <div>Weather data not available</div>;
   }
 
-  const { current_weather, timezone } = weatherData;
-  const temperature = current_weather.temperature;
-  const windSpeed = current_weather.windspeed;
-  const windDirection = current_weather.winddirection;
-  const visibility = current_weather.visibility; // Supposer que visibility est présent, ajuster si nécessaire
+  const { currentWeather, currentWeatherUnits } = weatherData;
+  const { windspeed, winddirection, visibility, humidity } = currentWeather;
 
   return (
     <div className={styles.wrapper}>
       <MetricsCard
         title={"Humidity"}
         iconSrc={"/icons/humidity.png"}
-        metric={current_weather.humidity || "N/A"} // Adapter si l'humidité est disponible
+        metric={humidity || "N/A"} // Adapter si l'humidité est disponible
         unit={"%"}
       />
+
       <MetricsCard
         title={"Wind speed"}
         iconSrc={"/icons/wind.png"}
-        metric={getWindSpeed(unitSystem, windSpeed)}
+        metric={getWindSpeed(unitSystem, windspeed)}
         unit={unitSystem === "metric" ? "m/s" : "m/h"}
       />
       <MetricsCard
         title={"Wind direction"}
         iconSrc={"/icons/compass.png"}
-        metric={degToCompass(windDirection)}
+        metric={degToCompass(winddirection)}
       />
       <MetricsCard
         title={"Visibility"}
