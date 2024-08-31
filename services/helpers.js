@@ -26,7 +26,15 @@ export const getTime = (unitSystem, currentTime, timezone) => {
     timeZone: timezone, // Apply the timezone for accurate local time
   };
 
-  return localTime.toLocaleTimeString(undefined, options); // Convert to a formatted string
+  // Format the time
+  let formattedTime = localTime.toLocaleTimeString(undefined, options);
+
+  // If in imperial system, remove AM/PM for a pure time value
+  if (unitSystem === "imperial") {
+    formattedTime = formattedTime.replace(/(AM|PM)/, "").trim();
+  }
+
+  return formattedTime; // Return the formatted time without AM/PM if required
 };
 
 // Get AM/PM: Extracts AM/PM based on unit system

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function POST(req, res) {
+export async function POST(req) {
   try {
     // Extract cityInput from the request body
     const { cityInput } = await req.json();
@@ -19,7 +19,7 @@ export async function POST(req, res) {
 
     const geocodingData = await geocodingResponse.json();
 
-    // Handle cases where geocoding might return an error or throttle
+    // Handle cases where geocoding might return an error or missing data
     if (geocodingData.error || !geocodingData.latt || !geocodingData.longt) {
       throw new Error(
         `Geocoding failed: ${geocodingData.reason || "Invalid response data"}`
@@ -31,7 +31,6 @@ export async function POST(req, res) {
 
     // Fetch weather data using the latitude and longitude
     const weatherResponse = await fetch(
-      // `https://api.open-meteo.com/v1/forecast?latitude=${latt}&longitude=${longt}&current_weather=true`
       `https://api.open-meteo.com/v1/forecast?latitude=${latt}&longitude=${longt}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,wind_direction_10m&hourly=visibility&daily=sunrise,sunset&timezone=auto&past_hours=1&forecast_hours=1`
     );
 

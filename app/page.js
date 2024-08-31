@@ -11,67 +11,92 @@ import { ErrorScreen } from "../components/ErrorScreen";
 import { WeatherObject } from "../models/WeatherModel2";
 
 import styles from "../styles/Home.module.css";
-
+// Initial state for loading and errors
+const initialState = {
+  cityInfo: null,
+  weatherData: null,
+  loading: true,
+  error: null,
+};
 export default function HomePage() {
   const [weatherData, setWeatherData] = useState(null);
   const [unitSystem, setUnitSystem] = useState("metric");
   const [cityInfo, setCityInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Fetch city info
     const fetchCityInfo = async () => {
       try {
         const response = await fetch("/cityConfig.json");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
         const data = await response.json();
         setCityInfo(data);
       } catch (error) {
         console.error("Error fetching city config:", error);
+        setError("Failed to fetch city config.");
       }
     };
 
     fetchCityInfo();
-  }, []);
+  }, []); // Runs only once when the component mounts
 
   useEffect(() => {
-    if (cityInfo && cityInfo.city) {
-      const getData = async () => {
-        try {
-          const res = await fetch("/api", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cityInput: cityInfo.city }),
-          });
-          const data = await res.json();
-          console.log("API response:", data);
+    // Fetch weather data when cityInfo changes
+    const getData = async () => {
+      if (!cityInfo || !cityInfo.city) {
+        return; // Skip fetching if cityInfo is not available
+      }
 
-          // Create an instance of WeatherObject using the data from the API
-          const weatherObject = new WeatherObject(data);
-          console.log("Weather Object:", weatherObject);
-
-          setWeatherData(weatherObject);
-        } catch (error) {
-          console.error("Error fetching weather data:", error);
+      setLoading(true); // Set loading state
+      try {
+        const res = await fetch("/api", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cityInput: cityInfo.city }),
+        });
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
         }
-      };
-      getData();
-    }
-  }, [cityInfo]);
+        const data = await res.json();
+        console.log("API response:", data);
+
+        // Create an instance of WeatherObject using the data from the API
+        const weatherObject = new WeatherObject(data);
+        console.log("Weather Object:", weatherObject);
+
+        setWeatherData(weatherObject);
+        setError(null); // Clear any previous error
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+        setError("Failed to fetch weather data.");
+      } finally {
+        setLoading(false); // Set loading to false after fetching
+      }
+    };
+
+    getData();
+  }, [cityInfo]); // Dependency array includes cityInfo
 
   const changeSystem = () =>
     setUnitSystem((prevSystem) =>
       prevSystem === "metric" ? "imperial" : "metric"
     );
 
-  if (!weatherData) {
+  if (loading) {
     return <LoadingScreen loadingMessage="Chargement des données..." />;
   }
 
-  // Error handling
-  if (weatherData.message) {
+  if (error) {
     return (
-      <ErrorScreen errorMessage="Ville non trouvée!">
+      <ErrorScreen errorMessage={error}>
         <p>
-          La ville configurée n'a pas pu être trouvée. Veuillez vérifier le
-          fichier de configuration.
+          {error === "Failed to fetch city config."
+            ? "La ville configurée n'a pas pu être trouvée. Veuillez vérifier le fichier de configuration."
+            : "Une erreur est survenue lors de la récupération des données météo."}
         </p>
       </ErrorScreen>
     );
