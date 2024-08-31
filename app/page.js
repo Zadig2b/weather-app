@@ -11,13 +11,15 @@ import { ErrorScreen } from "../components/ErrorScreen";
 import { WeatherObject } from "../models/WeatherModel2";
 
 import styles from "../styles/Home.module.css";
-// Initial state for loading and errors
+
+// État initial pour le chargement et les erreurs
 const initialState = {
   cityInfo: null,
   weatherData: null,
   loading: true,
   error: null,
 };
+
 export default function HomePage() {
   const [weatherData, setWeatherData] = useState(null);
   const [unitSystem, setUnitSystem] = useState("metric");
@@ -26,61 +28,86 @@ export default function HomePage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch city info
+    // Récupérer les informations de la ville
     const fetchCityInfo = async () => {
       try {
         const response = await fetch("/cityConfig.json");
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("La réponse du réseau n'était pas correcte");
         }
         const data = await response.json();
         setCityInfo(data);
       } catch (error) {
-        console.error("Error fetching city config:", error);
-        setError("Failed to fetch city config.");
+        console.error(
+          "Erreur lors de la récupération de la configuration de la ville :",
+          error
+        );
+        setError("Échec de la récupération de la configuration de la ville.");
       }
     };
 
     fetchCityInfo();
-  }, []); // Runs only once when the component mounts
+  }, []); // Ne s'exécute qu'une seule fois lors du montage du composant
 
   useEffect(() => {
-    // Fetch weather data when cityInfo changes
+    // Récupérer les données météo lorsque cityInfo change
     const getData = async () => {
       if (!cityInfo || !cityInfo.city) {
-        return; // Skip fetching if cityInfo is not available
+        return; // Passer la récupération si cityInfo n'est pas disponible
       }
 
-      setLoading(true); // Set loading state
+      setLoading(true); // Définir l'état de chargement
       try {
-        const res = await fetch("/api", {
+        // Étape 1 : Récupérer les coordonnées géographiques de la ville
+        const geocodingResponse = await fetch("/api/geocoding", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cityInput: cityInfo.city }),
         });
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await res.json();
-        console.log("API response:", data);
 
-        // Create an instance of WeatherObject using the data from the API
+        if (!geocodingResponse.ok) {
+          throw new Error(
+            "La réponse du réseau pour le géocodage n'était pas correcte"
+          );
+        }
+
+        const { latt, longt } = await geocodingResponse.json();
+
+        // Étape 2 : Récupérer les données météorologiques en utilisant les coordonnées
+        const weatherResponse = await fetch(
+          `/api/weather?latitude=${latt}&longitude=${longt}`
+        );
+
+        if (!weatherResponse.ok) {
+          throw new Error(
+            "La réponse du réseau pour les données météorologiques n'était pas correcte"
+          );
+        }
+
+        const data = await weatherResponse.json();
+        console.log("Réponse de l'API :", data);
+
+        // Créer une instance de WeatherObject à partir des données de l'API
         const weatherObject = new WeatherObject(data);
-        console.log("Weather Object:", weatherObject);
+        console.log("Objet Météo :", weatherObject);
 
         setWeatherData(weatherObject);
-        setError(null); // Clear any previous error
+        setError(null); // Effacer toute erreur précédente
       } catch (error) {
-        console.error("Error fetching weather data:", error);
-        setError("Failed to fetch weather data.");
+        console.error(
+          "Erreur lors de la récupération des données météorologiques :",
+          error
+        );
+        setError("Échec de la récupération des données météorologiques.");
       } finally {
-        setLoading(false); // Set loading to false after fetching
+        setLoading(false); // Définir le chargement sur false après la récupération
       }
     };
 
     getData();
-  }, [cityInfo]); // Dependency array includes cityInfo
+  }, [cityInfo]); // Le tableau de dépendances inclut cityInfo
 
+  // Fonction pour changer le système d'unités
   const changeSystem = () =>
     setUnitSystem((prevSystem) =>
       prevSystem === "metric" ? "imperial" : "metric"
@@ -94,7 +121,7 @@ export default function HomePage() {
     return (
       <ErrorScreen errorMessage={error}>
         <p>
-          {error === "Failed to fetch city config."
+          {error === "Échec de la récupération de la configuration de la ville."
             ? "La ville configurée n'a pas pu être trouvée. Veuillez vérifier le fichier de configuration."
             : "Une erreur est survenue lors de la récupération des données météo."}
         </p>
@@ -102,7 +129,7 @@ export default function HomePage() {
     );
   }
 
-  // Déstructurer les données  de WeatherData
+  // Déstructurer les données de WeatherData
   const {
     latitude,
     longitude,
@@ -123,9 +150,9 @@ export default function HomePage() {
   } = weatherData;
 
   const visibility = weatherData.getVisibility();
-  console.log("Visibilité:", visibility);
+  console.log("Visibilité :", visibility);
 
-  // Construsctrion du nom de l'icône en fonction du code météo et de is_day
+  // Construction du nom de l'icône en fonction du code météo et de is_day
   const suffix = is_day === 1 ? "d" : "n";
   const iconName = `0${weather_code}${suffix}`;
 
@@ -134,7 +161,7 @@ export default function HomePage() {
       <MainCard
         city={cityInfo.city}
         country={cityInfo.country || "N/A"}
-        description={`Weather code: ${weather_code}`}
+        description={`Code météo : ${weather_code}`}
         iconName={iconName}
         unitSystem={unitSystem}
         weatherData={weatherData}
