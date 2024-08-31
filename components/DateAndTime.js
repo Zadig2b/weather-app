@@ -7,12 +7,16 @@ export const DateAndTime = ({ time, timezone, unitSystem }) => {
     return <div>Data not available</div>;
   }
 
-  const localTime = new Date(time); // Convert the time string to a Date object
+  // Convert the time string to a Date object considering the timezone
+  const localTime = new Date(time);
+  console.log(time); // Original ISO string
+  console.log(localTime); // Date object based on the ISO string
+  console.log(timezone); // Timezone information
 
   return (
     <div className={styles.wrapper}>
       <h2>
-        {`${getWeekDay(localTime)}, ${getTime(
+        {`${getWeekDay(localTime, timezone)}, ${getTime(
           unitSystem,
           localTime,
           timezone

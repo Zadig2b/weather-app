@@ -77,7 +77,7 @@ export default function HomePage() {
     );
   }
 
-  // Destructure necessary data from weatherData
+  // Déstructurer les données  de WeatherData
   const {
     latitude,
     longitude,
@@ -97,7 +97,10 @@ export default function HomePage() {
     dailyUnits,
   } = weatherData;
 
-  // Construct the icon name based on weather code and is_day
+  const visibility = weatherData.getVisibility();
+  console.log("Visibilité:", visibility);
+
+  // Construsctrion du nom de l'icône en fonction du code météo et de is_day
   const suffix = is_day === 1 ? "d" : "n";
   const iconName = `0${weather_code}${suffix}`;
 
@@ -133,7 +136,7 @@ export default function HomePage() {
           sunrise={sunrise[0]}
           sunset={sunset[0]}
           unitSystem={unitSystem}
-          visibility={weatherData.visibility}
+          visibility={visibility}
         />
         <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>

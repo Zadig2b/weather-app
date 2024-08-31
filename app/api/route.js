@@ -32,7 +32,7 @@ export async function POST(req, res) {
     // Fetch weather data using the latitude and longitude
     const weatherResponse = await fetch(
       // `https://api.open-meteo.com/v1/forecast?latitude=${latt}&longitude=${longt}&current_weather=true`
-      `https://api.open-meteo.com/v1/forecast?latitude=${latt}&longitude=${longt}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,wind_direction_10m&daily=sunrise,sunset&timezone=auto&forecast_days=1`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latt}&longitude=${longt}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,wind_direction_10m&hourly=visibility&daily=sunrise,sunset&timezone=auto&past_hours=1&forecast_hours=1`
     );
 
     // Check if the weather request was successful

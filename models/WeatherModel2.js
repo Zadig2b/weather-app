@@ -50,12 +50,32 @@ export class WeatherObject {
   }
 
   getFormattedVisibility() {
-    const visibility = this.hourly.visibility.find((_, index) => {
-      return (
-        new Date(this.hourly.time[index]).toISOString() === this.current.time
-      );
+    // Normalize times to the same format (e.g., ISO 8601 string)
+    const currentTime = new Date(this.current.time).toISOString();
+    console.log("Normalized Current time:", currentTime);
+
+    // Find the closest time in hourly data
+    let closestIndex = -1;
+    let closestDiff = Infinity;
+
+    this.hourly.time.forEach((hourlyTime, index) => {
+      const hourlyDate = new Date(hourlyTime).toISOString();
+      const diff = Math.abs(new Date(currentTime) - new Date(hourlyDate));
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestIndex = index;
+      }
     });
+
+    console.log("Closest time index:", closestIndex);
+
+    const visibility =
+      closestIndex !== -1 ? this.hourly.visibility[closestIndex] : null;
     return visibility ? `${visibility} ${this.hourlyUnits.visibility}` : "N/A";
+  }
+
+  getVisibility() {
+    return this.hourly.visibility[0];
   }
 
   getFormattedTime() {

@@ -17,36 +17,38 @@ export const getVisibility = (unitSystem, visibilityInMeters) =>
 
 // Get Time: Converts time based on unit system
 export const getTime = (unitSystem, currentTime, timezone) => {
-  const localTime = unixToLocalTime(currentTime, timezone);
-  return unitSystem === "imperial" ? timeTo12HourFormat(localTime) : localTime;
+  const localTime = new Date(currentTime); // Directly parse the ISO 8601 string into a Date object
+
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: unitSystem === "imperial", // Use 12-hour format for imperial system
+    timeZone: timezone, // Apply the timezone for accurate local time
+  };
+
+  return localTime.toLocaleTimeString(undefined, options); // Convert to a formatted string
 };
 
 // Get AM/PM: Extracts AM/PM based on unit system
 export const getAMPM = (unitSystem, currentTime, timezone) => {
   if (unitSystem === "imperial") {
-    const localTime = unixToLocalTime(currentTime, timezone);
-    const hours = parseInt(localTime.split(":")[0], 10);
-    return hours >= 12 ? "PM" : "AM";
+    const localTime = new Date(currentTime).toLocaleTimeString(undefined, {
+      timeZone: timezone,
+      hour: "numeric",
+      hour12: true,
+    });
+
+    // Extract AM/PM from the formatted time string
+    const amPm = localTime.split(" ")[1];
+    return amPm;
   }
   return "";
 };
 
 // Get Week Day: Returns the day of the week
-export const getWeekDay = (weatherData) => {
-  if (!weatherData || !weatherData.dt || !weatherData.timezone) {
-    return "Invalid data"; // Return error message if data is invalid
-  }
-
-  const weekday = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  return weekday[
-    new Date((weatherData.dt + weatherData.timezone) * 1000).getUTCDay()
-  ];
+export const getWeekDay = (localTime, timezone) => {
+  return localTime.toLocaleDateString("en-US", {
+    weekday: "long",
+    timeZone: timezone,
+  });
 };
