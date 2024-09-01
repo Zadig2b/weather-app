@@ -32,7 +32,7 @@ export const MetricsBox = ({
     sunrise === undefined ||
     sunset === undefined
   ) {
-    return <div>Weather data not available</div>;
+    return <div>Données météo non disponibles</div>;
   }
 
   return (

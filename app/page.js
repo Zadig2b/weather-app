@@ -8,7 +8,7 @@ import { MetricsBox } from "../components/MetricsBox";
 import { UnitSwitch } from "../components/UnitSwitch";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { ErrorScreen } from "../components/ErrorScreen";
-import { WeatherObject } from "../models/WeatherModel2";
+import { WeatherObject } from "../models/WeatherModel3";
 
 import styles from "../styles/Home.module.css";
 
@@ -129,35 +129,12 @@ export default function HomePage() {
     );
   }
 
-  // Déstructurer les données de WeatherData
-  const {
-    latitude,
-    longitude,
-    elevation,
-    current: {
-      temperature_2m,
-      apparent_temperature,
-      relative_humidity_2m,
-      wind_speed_10m,
-      wind_direction_10m,
-      is_day,
-      weather_code,
-      time,
-    },
-    currentUnits,
-    daily: { sunrise, sunset },
-    dailyUnits,
-  } = weatherData;
-
-  const visibility = weatherData.getVisibility();
-  //utilisation de la méthode de Classe pour récupérer la valeur de visibilité
-
   // Construction du nom de l'icône en fonction du code météo et de is_day
-  const suffix = is_day === 1 ? "d" : "n";
+  const suffix = weatherData.current.isDay === 1 ? "d" : "n";
   const iconName =
-    weather_code.length >= 2
-      ? `${weather_code}${suffix}`
-      : `0${weather_code}${suffix}`;
+    weatherData.current.weatherCode.length >= 2
+      ? `${weatherData.current.weatherCode}${suffix}`
+      : `0${weatherData.current.weatherCode}${suffix}`;
 
   return (
     <div className={styles.wrapper}>
@@ -167,32 +144,32 @@ export default function HomePage() {
         iconName={iconName}
         unitSystem={unitSystem}
         weatherData={weatherData}
-        feelsLike={apparent_temperature}
-        temperature={temperature_2m}
+        feelsLike={weatherData.current.apparentTemperature}
+        temperature={weatherData.current.temperature2m}
       />
       <ContentBox>
         <Header>
           <DateAndTime
-            time={time}
+            time={weatherData.current.time}
             unitSystem={unitSystem}
             timezone={weatherData.timezone}
             timezoneAbbreviation={weatherData.timezoneAbbreviation}
           />
         </Header>
         <MetricsBox
-          temperature={temperature_2m}
-          apparentTemperature={apparent_temperature}
-          humidity={relative_humidity_2m}
-          windSpeed={wind_speed_10m}
-          windDirection={wind_direction_10m}
-          units={currentUnits}
-          latitude={latitude}
-          longitude={longitude}
-          elevation={elevation}
-          sunrise={sunrise[0]}
-          sunset={sunset[0]}
+          temperature={weatherData.current.temperature2m}
+          apparentTemperature={weatherData.current.apparentTemperature}
+          humidity={weatherData.current.relativeHumidity2m}
+          windSpeed={weatherData.current.windSpeed10m}
+          windDirection={weatherData.current.windDirection10m}
+          units={weatherData.currentUnits}
+          latitude={weatherData.latitude}
+          longitude={weatherData.longitude}
+          elevation={weatherData.elevation}
+          sunrise={weatherData.daily.sunrise[0]}
+          sunset={weatherData.daily.sunset[0]}
           unitSystem={unitSystem}
-          visibility={visibility}
+          visibility={weatherData.getVisibility()}
         />
         <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>
