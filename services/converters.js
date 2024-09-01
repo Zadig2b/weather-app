@@ -1,26 +1,26 @@
-// Temperature Conversion: Celsius to Fahrenheit
+// Conversion de température : Celsius en Fahrenheit
 export const ctoF = (c) => (c * 9) / 5 + 32;
 
-// Speed Conversion: Meters per second to Miles per hour
+// Conversion de vitesse : mètres par seconde en milles par heure
 export const mpsToMph = (mps) => (mps * 2.236936).toFixed(2);
 
-// Distance Conversion: Kilometers to Miles
+// Conversion de distance : kilomètres en miles
 export const kmToMiles = (km) => (km / 1.609).toFixed(1);
 
-// Time Formatting: Converts 24-hour time to 12-hour format
+// Formatage de l'heure : convertit l'heure de 24 heures au format 12 heures
 export const timeTo12HourFormat = (time) => {
   const [hours, minutes] = time.split(":").map(Number);
   if (isNaN(hours) || isNaN(minutes)) {
-    return "Invalid time"; // Return error message if values are incorrect
+    return "Invalid time";
   }
 
   const period = hours >= 12 ? "PM" : "AM";
-  const adjustedHours = hours % 12 || 12; // Adjust hours for 12-hour format
+  const adjustedHours = hours % 12 || 12; // Ajuster les heures pour le format 12 heures
 
   return `${adjustedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
 };
 
-// Wind Direction Conversion: Degrees to Compass Direction
+// Conversion de la direction du vent : degrés en direction de la boussole
 export const degToCompass = (num) => {
   const val = Math.round(num / 22.5);
   const arr = [
@@ -44,15 +44,15 @@ export const degToCompass = (num) => {
   return arr[val % 16];
 };
 
-// Unix Time Conversion: Converts Unix time to local time
+// Conversion de l'heure Unix : convertit l'heure Unix en heure locale
 export const unixToLocalTime = (unixSeconds, timezoneOffset) => {
   if (typeof unixSeconds !== "number" || typeof timezoneOffset !== "number") {
     return "Invalid time"; // Return error message if values are incorrect
   }
 
-  // Create a new date object with Unix time adjusted by timezone offset
+  // Créer un nouvel objet date avec l'heure Unix ajustée par décalage horaire
   const date = new Date((unixSeconds + timezoneOffset) * 1000);
 
-  // Return the local time in "HH:MM" format
+  // Renvoie l'heure locale au format "HH:MM"
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };

@@ -8,15 +8,12 @@ export const MainCard = ({
   iconName,
   unitSystem,
   weatherData,
+  temperature,
+  feelsLike,
 }) => {
-  // Ensure weatherData is valid
   if (!weatherData || !weatherData.current) {
     return <div>Weather data not available</div>;
   }
-
-  // Access the necessary data from the weatherData object
-  const { temperature_2m: temperature, weather_code: weatherCode } =
-    weatherData.current;
 
   const iconSrc = `/icons/${iconName}.svg`;
 
@@ -32,6 +29,13 @@ export const MainCard = ({
           : Math.round(ctoF(temperature))}
         °{unitSystem === "metric" ? "C" : "F"}
       </h1>
+      <p>
+        Température ressentie{" "}
+        {unitSystem === "metric"
+          ? Math.round(feelsLike)
+          : Math.round(ctoF(feelsLike))}
+        °{unitSystem === "metric" ? "C" : "F"}
+      </p>
     </div>
   );
 };

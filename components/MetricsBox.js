@@ -23,7 +23,6 @@ export const MetricsBox = ({
   longitude,
   elevation,
 }) => {
-  // Render a fallback if required data is missing
   if (
     temperature === undefined ||
     apparentTemperature === undefined ||
@@ -48,7 +47,7 @@ export const MetricsBox = ({
         title="Wind Speed"
         iconSrc="/icons/wind.png"
         metric={getWindSpeed(unitSystem, windSpeed)}
-        unit={unitSystem === "metric" ? units.wind_speed_10m : "m/h"}
+        unit={unitSystem === "metric" ? units.wind_speed_10m : "mph"}
       />
       <MetricsCard
         title="Wind Direction"

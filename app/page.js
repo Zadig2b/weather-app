@@ -150,21 +150,25 @@ export default function HomePage() {
   } = weatherData;
 
   const visibility = weatherData.getVisibility();
-  console.log("Visibilité :", visibility);
+  //utilisation de la méthode de Classe pour récupérer la valeur de visibilité
 
   // Construction du nom de l'icône en fonction du code météo et de is_day
   const suffix = is_day === 1 ? "d" : "n";
-  const iconName = `0${weather_code}${suffix}`;
+  const iconName =
+    weather_code.length >= 2
+      ? `${weather_code}${suffix}`
+      : `0${weather_code}${suffix}`;
 
   return (
     <div className={styles.wrapper}>
       <MainCard
         city={cityInfo.city}
         country={cityInfo.country || "N/A"}
-        description={`Code météo : ${weather_code}`}
         iconName={iconName}
         unitSystem={unitSystem}
         weatherData={weatherData}
+        feelsLike={apparent_temperature}
+        temperature={temperature_2m}
       />
       <ContentBox>
         <Header>

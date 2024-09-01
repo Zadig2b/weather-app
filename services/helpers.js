@@ -5,39 +5,39 @@ import {
   timeTo12HourFormat,
 } from "./converters";
 
-// Get Wind Speed: Converts wind speed based on unit system
-export const getWindSpeed = (unitSystem, windInMps) =>
-  unitSystem === "metric" ? windInMps : mpsToMph(windInMps);
+// Obtenir la vitesse du vent : convertit la vitesse du vent en fonction du système d'unités
+export const getWindSpeed = (unitSystem, windInKmh) =>
+  unitSystem === "metric" ? windInKmh : kmToMiles(windInKmh);
 
-// Get Visibility: Converts visibility based on unit system
+// Obtenir la visibilité : convertit la visibilité en fonction du système d'unités
 export const getVisibility = (unitSystem, visibilityInMeters) =>
   unitSystem === "metric"
     ? (visibilityInMeters / 1000).toFixed(1)
     : kmToMiles(visibilityInMeters / 1000);
 
-// Get Time: Converts time based on unit system
+// Obtenir l'heure : convertit l'heure en fonction du système d'unités
 export const getTime = (unitSystem, currentTime, timezone) => {
-  const localTime = new Date(currentTime); // Directly parse the ISO 8601 string into a Date object
+  const localTime = new Date(currentTime); // Analyser directement la chaîne ISO 8601 dans un objet Date
 
   const options = {
     hour: "numeric",
     minute: "numeric",
-    hour12: unitSystem === "imperial", // Use 12-hour format for imperial system
-    timeZone: timezone, // Apply the timezone for accurate local time
+    hour12: unitSystem === "imperial", // Utiliser le format 12 heures pour le système impérial
+    timeZone: timezone, // Appliquer le fuseau horaire pour une heure locale précise
   };
 
-  // Format the time
+  // Formater l'heure
   let formattedTime = localTime.toLocaleTimeString(undefined, options);
 
-  // If in imperial system, remove AM/PM for a pure time value
+  // Si on est dans le système impérial, supprime AM/PM.
   if (unitSystem === "imperial") {
     formattedTime = formattedTime.replace(/(AM|PM)/, "").trim();
   }
 
-  return formattedTime; // Return the formatted time without AM/PM if required
+  return formattedTime; // Renvoie l'heure formatée sans AM/PM
 };
 
-// Get AM/PM: Extracts AM/PM based on unit system
+// Obtenir AM/PM : extrait AM/PM en fonction du système d'unités
 export const getAMPM = (unitSystem, currentTime, timezone) => {
   if (unitSystem === "imperial") {
     const localTime = new Date(currentTime).toLocaleTimeString(undefined, {
@@ -46,16 +46,16 @@ export const getAMPM = (unitSystem, currentTime, timezone) => {
       hour12: true,
     });
 
-    // Extract AM/PM from the formatted time string
+    // Extraire AM/PM de la chaîne d'heure formatée
     const amPm = localTime.split(" ")[1];
     return amPm;
   }
   return "";
 };
 
-// Get Week Day: Returns the day of the week
+// Obtenir le jour de la semaine
 export const getWeekDay = (localTime, timezone) => {
-  return localTime.toLocaleDateString("en-US", {
+  return localTime.toLocaleDateString("fr-Fr", {
     weekday: "long",
     timeZone: timezone,
   });
