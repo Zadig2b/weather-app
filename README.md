@@ -2,11 +2,14 @@
 
 Check the current weather on any city on the planet. Switch between metric and imperial units.
 
+! This is a re-work/update of an existing Madzadev project !
+https://github.com/madzadev/weather-app.git
+
 ![Alt img](https://images.ctfassets.net/zlsyc9paq6sa/3uBrJ07WSM40FpolgjInHY/7d886cb4187b52194bf9b63c183a1d3a/1627637330_x.gif)
 
 ## Features
 
-1. User's ability to search cities
+1. User's ability to modify cityConfig.json to check weather anywhere in the world.
 
 2. Current local time and date
 
@@ -28,15 +31,7 @@ Check the current weather on any city on the planet. Switch between metric and i
 
 3. `npm install`
 
-4. Log-in to [Openweathermap.com](https://openweathermap.org/)
-
-5. Create an API key
-
-6. `cp .env.example .env.local`
-
-7. Paste API key for `OPENWEATHER_API_KEY`
-
-8. `npm run dev`
+4. `npm run dev`
 
 ## Contributions
 
