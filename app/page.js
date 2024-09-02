@@ -50,7 +50,7 @@ export default function HomePage() {
   }, []); // Ne s'exécute qu'une seule fois lors du montage du composant
 
   useEffect(() => {
-    // Récupérer les données météo lorsque cityInfo change
+    // Fonction pour récupérer les données météo
     const getData = async () => {
       if (!cityInfo || !cityInfo.city) {
         return; // Passer la récupération si cityInfo n'est pas disponible
@@ -104,7 +104,13 @@ export default function HomePage() {
       }
     };
 
-    getData();
+    getData(); // Appeler une première fois les données météo immédiatement
+
+    const intervalId = setInterval(() => {
+      getData(); // Appeler les données météo toutes les heures
+    }, 3600000); // 3600000 ms = 1 heure
+
+    return () => clearInterval(intervalId); // Nettoyer l'intervalle lors du démontage du composant
   }, [cityInfo]); // Le tableau de dépendances inclut cityInfo
 
   // Fonction pour changer le système d'unités
